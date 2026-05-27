@@ -4,6 +4,29 @@ Alle noemenswaardige wijzigingen in deze bekende buildlijn worden hier bijgehoud
 
 
 
+
+## v0.5.8 — Audio lifecycle stop + passive PWA update check
+
+### Added
+
+- Added lifecycle handling for Safari/browser/PWA background events.
+- When the browser tab, Safari page or homescreen web app is hidden/closed, all music is stopped immediately.
+- If the app is hidden during active play, the game now moves to the pause screen instead of silently continuing.
+- Added `sw.js`, a service worker with network-first app-shell handling and cached fallback.
+- Added `version.json` for passive version checking.
+- Added a passive update check on open/return: if a newer `version.json` is reachable, the app asks the service worker to update and reloads when not actively playing.
+
+### Changed
+
+- Updated visible version text and HTML title to v0.5.8.
+- Updated `manifest.json` metadata with the current version and stable app id.
+
+### Notes
+
+- The update-check is intentionally passive: if there is no network, the current/cached version keeps working.
+- This improves update behavior from v0.5.8 onward. Older homescreen installs may still need one successful load of the new files before this update mechanism can take over.
+- No gameplay, sprite, icon, leaderboard, touch-control or damage-grace behavior was intentionally changed in this version.
+
 ## v0.5.7 — Post-hit invincibility / blinking damage grace
 
 ### Changed

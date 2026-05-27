@@ -1,7 +1,7 @@
 {
   "name": "Unicorn Run",
   "short_name": "Unicorn Run",
-  "description": "Een kleine regenboog-unicorn arcadegame.",
+  "description": "Een kleine Nederlandstalige regenboog-unicorn arcadegame.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -21,5 +21,7 @@
       "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "id": "./",
+  "version": "0.5.8"
 }

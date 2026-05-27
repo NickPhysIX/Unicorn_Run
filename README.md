@@ -2,7 +2,7 @@
 
 **Unicorn Run** is een kleine arcade-style browsergame rond een vliegende/rennende unicorn, gebouwd als één losse HTML-game met lokale assets. De game kan direct in een browser worden geopend en is geschikt om op iPhone/iPad via Safari op het beginscherm te zetten.
 
-Current package version: **v0.5.7**
+Current package version: **v0.5.8**
 
 ## Starten
 
@@ -44,6 +44,8 @@ De package bevat iOS/iPadOS homescreen icons en een web-app manifest. Op iOS bli
 - Auto-Run en gecontroleerde/manual speelmodus.
 - Lokale Top 5 highscore board per modus met initialen en datum.
 - In-game pauzeknop rechtsboven, met pauzemenu.
+- Automatische pauze/audio-stop wanneer de app/browser naar de achtergrond gaat of sluit.
+- Passieve update-check bij openen/terugkeren, met offline fallback via service worker.
 - Zichtbare game-tekst en uitleg in het Nederlands.
 - Game-over sfeer met fairy/melancholische animatie en muziek.
 - iPhone/iPad homescreen ondersteuning met app-icon.
@@ -56,6 +58,8 @@ Belangrijkste bestanden:
 
 - `index.html` — actuele startfile voor de game.
 - `manifest.json` — web-app manifest voor PWA/homescreen metadata.
+- `sw.js` — service worker voor caching/offline fallback en soepelere updates.
+- `version.json` — klein versiebestand voor passieve update-checks.
 - `app-icon-*.png` — homescreen/app icon formaten.
 - `app-icon-source.png` — bronbestand van het app icon.
 - `fairy_fly_sheet.png` — fairy sprite sheet.
@@ -75,14 +79,17 @@ Deze README legt alleen vast wat bekend is uit de projectcontext en de door Niel
 - **Prompts voor unicorn, regenboog, ijsjes, steen en modder:** afkomstig uit Claude, volgens projectnotities van Niels.
 - **Fairy prompt:** gestart door Niels op basis van de unicorn prompt en verder afgerond met hulp van ChatGPT.
 - **Animatie-inzichten:** gebaseerd op Claude's inzichten, volgens projectnotities van Niels.
-- **v0.5.1 t/m v0.5.7 patches:** door ChatGPT verwerkt op basis van Niels' verzoeken en aangeleverde bestanden/assets.
+- **v0.5.1 t/m v0.5.8 patches:** door ChatGPT verwerkt op basis van Niels' verzoeken en aangeleverde bestanden/assets.
 
 ## Privacy / opslag
 
-De highscore board gebruikt lokale browseropslag (`localStorage`). Er zijn geen externe services of netwerkcalls nodig voor het opslaan van scores. Scores blijven op het apparaat/in de browser staan waar ze zijn ingevoerd.
+De highscore board gebruikt lokale browseropslag (`localStorage`). Er zijn geen externe services nodig voor het opslaan van scores. Scores blijven op het apparaat/in de browser staan waar ze zijn ingevoerd.
+
+Vanaf v0.5.8 kan de game bij openen/terugkeren `version.json` ophalen om te kijken of er een nieuwere versie beschikbaar is. Als er netwerk is, probeert de service worker de nieuwste app-shell te laden; offline draait de huidige/cached versie door.
 
 ## Bekende aandachtspunten
 
 - iOS/iPadOS installatie vereist Safari en de handmatige route **Delen → Zet op beginscherm**.
 - Highscores zijn lokaal per browser/apparaat en worden niet gesynchroniseerd.
+- De passieve update-check helpt vooral vanaf v0.5.8 en verder. Een oudere homescreen-installatie die nog oude HTML hardnekkig cachet, moet mogelijk één keer Safari/herladen of opnieuw openen voordat deze nieuwe update-logica actief is.
 - De game is bedoeld als compacte HTML/browsergame; bij verdere uitbreiding is het verstandig om assets en code op termijn te splitsen in mappen/bestanden.
