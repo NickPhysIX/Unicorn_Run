@@ -2,7 +2,7 @@
   "name": "Unicorn Run",
   "short_name": "Unicorn Run",
   "description": "A tiny rainbow unicorn arcade runner.",
-  "start_url": "./unicorn_run_v0.5.2.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",

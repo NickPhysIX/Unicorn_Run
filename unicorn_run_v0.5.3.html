@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Unicorn Run v0.5.5</title>
+<title>Unicorn Run v0.5.3</title>
 <meta name="theme-color" content="#c66dff">
 <meta name="application-name" content="Unicorn Run">
 <meta name="mobile-web-app-capable" content="yes">
@@ -155,19 +155,6 @@
     color: #a890c0;
     margin-top: 16px;
   }
-  .start-credit {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(16px + env(safe-area-inset-bottom));
-    text-align: center;
-    font-size: 13px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.78);
-    letter-spacing: 0.4px;
-    text-shadow: 1px 1px 0 #6b2d8c;
-    pointer-events: none;
-  }
 
   /* v0.5.2: Homescreen install CTA */
   .install-cta {
@@ -219,7 +206,7 @@
     font-size: 14px;
     margin-bottom: 16px;
   }
-  /* v0.5.4: Touch controls — floating manual joystick + fixed pink jump button for both modes */
+  /* v0.5.3: Touch controls — floating left controller + fixed pink jump button */
   #touch-controls {
     position: absolute;
     inset: 0;
@@ -242,9 +229,6 @@
   }
   #touch-controls.autorun #move-zone {
     display: none;
-  }
-  #touch-controls.autorun #btn-jump {
-    display: block;
   }
   .joy-base {
     position: fixed;
@@ -305,7 +289,6 @@
     }
     .joy-base { width: 80px; height: 80px; }
     .joy-knob { width: 36px; height: 36px; }
-    .start-credit { bottom: calc(8px + env(safe-area-inset-bottom)); font-size: 11px; }
   }
   .hidden { display: none !important; }
 
@@ -546,8 +529,8 @@
     <h1>🦄 Unicorn Run</h1>
     <p>Verzamel regenbogen en ijsjes!<br>Pas op voor modder en stenen.</p>
     <div id="loading">Sprites laden…</div>
-    <button id="btn-autorun" disabled>✨ Auto-Run<br><span style="font-size:11px;font-weight:normal">Roze knop = springen</span></button>
-    <button id="btn-control" class="secondary" disabled>🎮 Gecontroleerd<br><span style="font-size:11px;font-weight:normal">Joystick + roze springknop</span></button>
+    <button id="btn-autorun" disabled>✨ Auto-Run<br><span style="font-size:11px;font-weight:normal">Tik om te springen</span></button>
+    <button id="btn-control" class="secondary" disabled>🎮 Gecontroleerd<br><span style="font-size:11px;font-weight:normal">Pijltjes + spring</span></button>
     <div id="install-cta" class="install-cta hidden">
       <div class="install-cta-title">📲 Speel als app</div>
       <div id="install-copy" class="install-cta-copy">Installeer Unicorn Run op je beginscherm.</div>
@@ -571,8 +554,7 @@
         <span class="legend-label legend-points-minus">-1 ❤</span>
       </div>
     </div>
-    <div class="small">v0.5.5 — voor Emily</div>
-    <div class="start-credit">Niels Braakman</div>
+    <div class="small">v0.5.2 — voor Emily</div>
   </div>
 
   <div id="gameover-menu" class="menu hidden">
@@ -608,7 +590,7 @@
 'use strict';
 
 // ============================================================
-// UNICORN RUN v0.5.5 — index.html packaging + project docs
+// UNICORN RUN v0.5.3 — floating touch controller + pink jump button
 // ============================================================
 
 const ASSETS = {
@@ -1823,10 +1805,7 @@ window.addEventListener('keyup', (e) => {
 });
 
 canvas.addEventListener('pointerdown', (e) => {
-  // Desktop/mouse convenience: click the canvas to jump in Auto-Run.
-  // On touch devices, Auto-Run uses the fixed pink JUMP button so accidental taps
-  // elsewhere on the screen no longer trigger a jump.
-  if (game.scene === 'play' && game.mode === 'autorun' && !hasTouchDevice()) {
+  if (game.scene === 'play' && game.mode === 'autorun') {
     game.jumpQueued = true;
   }
 });
@@ -1839,7 +1818,6 @@ function configureTouchControls(mode) {
   const tc = document.getElementById('touch-controls');
   if (!tc) return;
   resetJoystick();
-  game.jumpQueued = false;
   if (!hasTouchDevice()) {
     tc.classList.remove('visible', 'manual', 'autorun');
     tc.setAttribute('aria-hidden', 'true');
