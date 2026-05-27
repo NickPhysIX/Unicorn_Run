@@ -3,6 +3,20 @@
 Alle noemenswaardige wijzigingen in deze bekende buildlijn worden hier bijgehouden. Sommige oudere onderdelen zijn gebaseerd op projectcontext/notities en niet op een volledig beschikbaar Git-achtig historisch archief.
 
 
+
+## v0.5.7 — Post-hit invincibility / blinking damage grace
+
+### Changed
+
+- Added a 1-second invincibility window after damage from mud or stone.
+- During this grace period, the unicorn blinks and cannot receive additional hazard damage.
+- This prevents a single obstacle, or two very close obstacles, from draining multiple hearts unfairly.
+- Updated visible version text and HTML title to v0.5.7.
+
+### Notes
+
+- No sprite, icon, audio, touch-control, pause-menu or leaderboard behavior was intentionally changed in this version.
+
 ## v0.5.6 — Nederlandse UI + pauzeknop in-game
 
 ### Added
