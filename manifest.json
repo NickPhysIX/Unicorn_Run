@@ -1,0 +1,25 @@
+{
+  "name": "Unicorn Run",
+  "short_name": "Unicorn Run",
+  "description": "A tiny rainbow unicorn arcade runner.",
+  "start_url": "./unicorn_run_v0.5.2.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1a0d2e",
+  "theme_color": "#c66dff",
+  "icons": [
+    {
+      "src": "app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
