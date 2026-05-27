@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Unicorn Run v0.5.2</title>
+<meta name="theme-color" content="#c66dff">
+<meta name="application-name" content="Unicorn Run">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Unicorn Run">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="app-icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="app-icon-192.png">
+<link rel="apple-touch-icon" href="app-icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="app-icon-180.png">
+<link rel="apple-touch-icon" sizes="167x167" href="app-icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="app-icon-152.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #1a0d2e;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+  }
+  #game {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    background: #ffd6f0;
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+  }
+  #ui {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+  }
+  #score {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #6b2d8c, -1px -1px 0 #6b2d8c, 1px -1px 0 #6b2d8c, -1px 1px 0 #6b2d8c;
+    letter-spacing: 1px;
+    z-index: 5;
+  }
+  #high {
+    position: absolute;
+    top: 38px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffeb3b;
+    font-size: 13px;
+    text-shadow: 1px 1px 0 #6b2d8c;
+    z-index: 5;
+  }
+  #mute-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid #fff;
+    background: rgba(107, 45, 140, 0.7);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 6;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #mute-btn:active { transform: scale(0.95); }
+  .menu {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 13, 46, 0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    pointer-events: auto;
+    z-index: 10;
+    padding: 20px;
+    overflow: hidden;
+  }
+  .menu h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #ff6b9d, #c66dff, #6bb6ff, #6dffb6, #fff66b, #ff9d6b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+  .menu p {
+    color: #d0b8e8;
+    margin-bottom: 24px;
+    font-size: 14px;
+    text-align: center;
+  }
+  .menu button {
+    padding: 14px 28px;
+    margin: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 3px solid #fff;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #ff8fc7, #c66dff);
+    color: #fff;
+    cursor: pointer;
+    min-width: 240px;
+    box-shadow: 0 4px 0 #6b2d8c;
+    transition: transform 0.1s;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .menu button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #6b2d8c;
+  }
+  .menu button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .menu button.secondary {
+    background: linear-gradient(180deg, #6bb6ff, #6d8fff);
+  }
+  .menu .small {
+    font-size: 12px;
+    color: #a890c0;
+    margin-top: 16px;
+  }
+
+  /* v0.5.2: Homescreen install CTA */
+  .install-cta {
+    width: min(360px, 92vw);
+    margin: 10px 0 6px 0;
+    padding: 10px 12px;
+    border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 14px;
+    background: rgba(107, 45, 140, 0.55);
+    box-shadow: 0 3px 0 rgba(26,13,46,0.45);
+    color: #fff;
+    text-align: center;
+    pointer-events: auto;
+  }
+  .install-cta-title {
+    color: #ffeb3b;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-shadow: 2px 2px 0 #6b2d8c;
+  }
+  .install-cta-copy {
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.35;
+    text-shadow: 1px 1px 0 #6b2d8c;
+  }
+  .install-cta-copy strong { color: #ffeb3b; }
+  .install-cta button {
+    min-width: 0;
+    width: auto;
+    margin: 8px 0 0 0;
+    padding: 9px 14px;
+    font-size: 13px;
+    border-width: 2px;
+    border-radius: 10px;
+    box-shadow: 0 3px 0 #6b2d8c;
+  }
+  .ios-share-glyph {
+    display: inline-block;
+    padding: 0 3px;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  #loading {
+    color: #d0b8e8;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  #touch-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    display: none;
+    pointer-events: auto;
+    z-index: 4;
+  }
+  #touch-controls.visible { display: flex; }
+  .tc-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 32px;
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tc-btn:active { background: rgba(255, 255, 255, 0.2); }
+  .tc-btn.jump { font-size: 24px; }
+  .hidden { display: none !important; }
+
+  /* v0.4: Legend on start screen */
+  #legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    margin: 20px 0 8px 0;
+    max-width: 360px;
+    width: 100%;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .legend-sprite {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    flex-shrink: 0;
+  }
+  .legend-label {
+    font-size: 13px;
+    color: #fff;
+    font-weight: bold;
+  }
+  .legend-points-plus { color: #6dffb6; }
+  .legend-points-minus { color: #ff8fc7; }
+
+  /* v0.4: Game over splash with rainbow gradient */
+  #gameover-menu {
+    background: linear-gradient(135deg,
+      rgba(255, 107, 107, 0.92) 0%,
+      rgba(255, 165, 107, 0.92) 18%,
+      rgba(255, 235, 107, 0.92) 36%,
+      rgba(107, 255, 143, 0.92) 54%,
+      rgba(107, 182, 255, 0.92) 72%,
+      rgba(198, 109, 255, 0.92) 100%);
+  }
+  #gameover-fairy-canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16));
+    transform: translate(-50%, -50%);
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.95;
+  }
+  #gameover-menu > *:not(#gameover-fairy-canvas) {
+    position: relative;
+    z-index: 1;
+  }
+  #gameover-menu h1 {
+    background: none;
+    -webkit-text-fill-color: white;
+    color: white;
+    text-shadow: 3px 3px 0 #6b2d8c, -1px -1px 0 #6b2d8c, 2px -1px 0 #6b2d8c, -1px 2px 0 #6b2d8c;
+    font-size: 42px;
+  }
+  .gameover-score {
+    font-size: 56px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 3px 3px 0 #6b2d8c;
+    margin: 8px 0;
+    letter-spacing: 2px;
+  }
+  .gameover-best {
+    font-size: 16px;
+    color: #fff;
+    text-shadow: 1px 1px 0 #6b2d8c;
+    margin-bottom: 20px;
+  }
+  .gameover-new {
+    display: inline-block;
+    background: #ffeb3b;
+    color: #6b2d8c;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-shadow: none;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    animation: bounce 0.8s ease-in-out infinite alternate;
+  }
+
+  /* v0.5.1: Arcade-style local highscore board */
+  .initials-entry {
+    width: min(330px, 92vw);
+    margin: 4px 0 12px 0;
+    padding: 10px 12px;
+    border: 3px solid #fff;
+    border-radius: 14px;
+    background: rgba(26, 13, 46, 0.72);
+    box-shadow: 0 4px 0 rgba(107,45,140,0.55);
+    text-align: center;
+  }
+  .initials-title {
+    color: #ffeb3b;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 0 #6b2d8c;
+    margin-bottom: 8px;
+  }
+  .initials-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  #initials-input {
+    width: 92px;
+    height: 48px;
+    border: 3px solid #fff;
+    border-radius: 10px;
+    background: #1a0d2e;
+    color: #ffeb3b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: inset 0 0 0 2px rgba(255,235,59,0.25);
+    outline: none;
+    pointer-events: auto;
+  }
+  #initials-input:focus {
+    box-shadow: inset 0 0 0 2px rgba(255,235,59,0.45), 0 0 0 3px rgba(255,255,255,0.35);
+  }
+  #btn-save-score {
+    min-width: 68px;
+    width: 68px;
+    padding: 11px 10px;
+    margin: 0;
+    border-radius: 10px;
+  }
+  .initials-hint {
+    margin-top: 6px;
+    color: rgba(255,255,255,0.88);
+    font-size: 11px;
+    text-shadow: 1px 1px 0 #6b2d8c;
+  }
+  .scoreboard {
+    width: min(360px, 94vw);
+    margin: 4px 0 14px 0;
+    padding: 12px 14px;
+    border: 3px solid #fff;
+    border-radius: 16px;
+    background: rgba(26, 13, 46, 0.68);
+    box-shadow: 0 4px 0 rgba(107,45,140,0.55);
+    text-shadow: none;
+  }
+  .scoreboard-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #ffeb3b;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0 #6b2d8c;
+  }
+  .scoreboard-mode {
+    color: #fff;
+    font-size: 11px;
+  }
+  .scoreboard-row {
+    display: grid;
+    grid-template-columns: 24px 46px 66px 1fr;
+    gap: 8px;
+    align-items: baseline;
+    padding: 3px 0;
+    color: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 0 rgba(107,45,140,0.8);
+  }
+  .scoreboard-row.highlight {
+    color: #ffeb3b;
+  }
+  .scoreboard-empty {
+    color: rgba(255,255,255,0.62);
+  }
+  @media (max-height: 520px) {
+    #gameover-menu h1 { font-size: 34px; margin-bottom: 2px; }
+    .gameover-score { font-size: 42px; margin: 2px 0; }
+    .gameover-best { margin-bottom: 8px; }
+    .scoreboard { margin-bottom: 8px; padding: 8px 12px; }
+    .scoreboard-row { font-size: 12px; padding: 2px 0; }
+    .initials-entry { margin-bottom: 8px; padding: 8px 10px; }
+    #initials-input { height: 40px; font-size: 22px; }
+    #gameover-menu .menu button, #gameover-menu button { padding: 10px 22px; margin: 5px; }
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-4px); }
+  }
+</style>
+</head>
+<body>
+<div id="game">
+  <canvas id="canvas" width="480" height="270"></canvas>
+</div>
+<div id="ui">
+  <button id="mute-btn" title="Mute / Unmute">🔊</button>
+  <div id="score">0</div>
+  <div id="high">Best: 0</div>
+  <div id="touch-controls">
+    <button class="tc-btn" id="btn-left">◀</button>
+    <button class="tc-btn jump" id="btn-jump">JUMP</button>
+    <button class="tc-btn" id="btn-right">▶</button>
+  </div>
+
+  <div id="start-menu" class="menu">
+    <h1>🦄 Unicorn Run</h1>
+    <p>Verzamel regenbogen en ijsjes!<br>Pas op voor modder en stenen.</p>
+    <div id="loading">Sprites laden…</div>
+    <button id="btn-autorun" disabled>✨ Auto-Run<br><span style="font-size:11px;font-weight:normal">Tik om te springen</span></button>
+    <button id="btn-control" class="secondary" disabled>🎮 Gecontroleerd<br><span style="font-size:11px;font-weight:normal">Pijltjes + spring</span></button>
+    <div id="install-cta" class="install-cta hidden">
+      <div class="install-cta-title">📲 Speel als app</div>
+      <div id="install-copy" class="install-cta-copy">Installeer Unicorn Run op je beginscherm.</div>
+      <button id="btn-install" class="secondary hidden" type="button">Installeren</button>
+    </div>
+    <div id="legend">
+      <div class="legend-item">
+        <img class="legend-sprite" id="legend-rainbow" width="48" height="28" alt="Regenboog">
+        <span class="legend-label legend-points-plus">+10</span>
+      </div>
+      <div class="legend-item">
+        <img class="legend-sprite" id="legend-icecream" width="26" height="40" alt="IJsje">
+        <span class="legend-label legend-points-plus">+5</span>
+      </div>
+      <div class="legend-item">
+        <img class="legend-sprite" id="legend-mud" width="54" height="16" alt="Modder">
+        <span class="legend-label legend-points-minus">-½ ❤</span>
+      </div>
+      <div class="legend-item">
+        <img class="legend-sprite" id="legend-rock" width="36" height="32" alt="Steen">
+        <span class="legend-label legend-points-minus">-1 ❤</span>
+      </div>
+    </div>
+    <div class="small">v0.5.2 — voor Emily</div>
+  </div>
+
+  <div id="gameover-menu" class="menu hidden">
+    <canvas id="gameover-fairy-canvas" width="480" height="270"></canvas>
+    <h1>Game Over</h1>
+    <div id="gameover-new" class="gameover-new hidden">✨ Nieuwe Highscore! ✨</div>
+    <div class="gameover-score" id="gameover-score">0</div>
+    <div class="gameover-best" id="gameover-best">Beste ooit: 0</div>
+    <div id="initials-entry" class="initials-entry hidden">
+      <div class="initials-title">🏆 Top-5 score! Vul je initialen in</div>
+      <div class="initials-row">
+        <input id="initials-input" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="3" aria-label="Initialen" value="NB">
+        <button id="btn-save-score">OK</button>
+      </div>
+      <div class="initials-hint">2–3 letters, arcade-style</div>
+    </div>
+    <div id="scoreboard" class="scoreboard">
+      <div class="scoreboard-title"><span>Top 5</span><span id="scoreboard-mode" class="scoreboard-mode">Auto-Run</span></div>
+      <div id="scoreboard-rows"></div>
+    </div>
+    <button id="btn-retry">🔄 Opnieuw</button>
+    <button id="btn-gameover-menu" class="secondary">🏠 Menu</button>
+  </div>
+
+  <div id="pause-menu" class="menu hidden">
+    <h1>Pauze</h1>
+    <button id="btn-resume">▶ Doorspelen</button>
+    <button id="btn-menu" class="secondary">🏠 Menu</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ============================================================
+// UNICORN RUN v0.5.2 — iOS homescreen icon + install CTA
+// ============================================================
+
+const ASSETS = {
+  unicornRun: "data:image/png;base64,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",
+  unicornJump: "data:image/png;base64,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",
+  rainbow: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAOCAYAAAA1+Nx+AAADTElEQVR4nIWUXUjdZRzHP8/L33M85+hZLtTNtBTSEpak4tiE1QY1orpoF4OKVfQ6it5Gd0UXXUQ3CW1rUl10MUbEoohBN20GwuhF2BLSnezkNHuhmYoej+fteZ5fF5Yl0/rdPc+P5/vh9+X7/BT/U+/u2iMAAY/4gNdgAkRRhDeWp4aH1H+937T51p475WBXOzoIAGIVAihRKKUQEUBTkcCHF0Z56fzwhlpXXZ49+ZHsfeA+xt54jfRSllSnIzIGh2BZFfcioALBw/KYwS4mOHdxlJ7BQTq7e9Zp2n8fjrzworRXKmil2do8RcwEave3EYIjrgwQIITViZRCBQV6BhNW2JfsQk6eIjgv2po1yDpa5vBhadhewj58hOrF9/GNBqMU384uM774ty3gJXCNKXBP+zaC8+g5yI3MwFwDi9OGi22tHHjuWbVugreffl5qqgWXKlAaepmqu27E6SqO/RBQth6iJOI8Sik0inntGJjM80yrImoIrMQ9Nak8saIhlS9cbVHrjxPUPLgdb0qk9+9AhTLHJ4Xp8XsxsgVfiRPpCK0MnoCTAsYu8576lEebctTd1kzhsxkSfUmu/eLSGkADvN6zS3pbmwhhifiOekRpjk/F+PW7J4loofm3anZnA73fr9CdydGbKXLzrMW4RqZGHufET5ZiLE1ibxuYMo1b0xztv13WAA/176SSLiIimG1xjmZzTGfuxkpE35Tn8vBZPhn6gEMDHerQQIc6fX6Qr858zK0TZbwYZsfv59RECVtrcHHBNi9xsKvzH4tUJLgtZfL1EQslKEuMcjFN04JjeirD4OdPrAvDma/fVADdt3TJdfkOZmO1lE2cyUKe6rSQurJCoSrJsUceE/1OT78Y56lriWjYeQOZBSGm42iStM47RrPfbPR/ABgZ+5Lr/6hQKkcEl+Dc5DwNfS1EdQYLJLJZtA8OvEPEr+ZbPFoZtNaID1R8eVNApVSkUvL4AILGmiqMMngFDk/Fl9EmiiNWI8oA4AQcCmsM2hpWF8TGFYAQAsYqtBKUUn8lR1EVLJXgUSd23yElVSYnOa5ULzCbTjNnU1T9so9kwXL6wqub7qsDva+IVZZiwuLSl0D9TFpf5qbf66kNMWLG8CfhEGe07S7aAQAAAABJRU5ErkJggg==",
+  icecream: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAUCAYAAABWMrcvAAACe0lEQVR4nI2SS0hVURSGv73POfdcu9ceEKUVImaJESUW0hsjskYRDZo0ceK0QRAUDYJGRRQUPSZNGkUW0YOKCAoqepiKlT2hsrrdUrOHqffcc/bZq0Fpagqt2b/2+vnWWnvBqDi0oUHkYqtI432Rs01yuK5eJGdkeI0aLuTMXQmdmMSCMuTF59/JIEdr0wHm79lOMrlMAehBQ3T+obB4Ns7CEqyN6XcFJaBSaTI6gOg65/YulyHTwTWbRbmaMI4AsAi+aEQB1pIOIvybNSRD/be98OAl0WXTAUuUTpDsi/iZ8igMQUSQ2KDF4fujdqbsrlcuAFqhEhptFDoQrOOQzgtW/syvHeynbkyUZ6g9TxTmeRYxBjtqmxYIOzrpzXxCeUkA3OPr6iUuLeLLrQcUFXhYsagZU4kjg+n9SZjpRAloz0U7Lte37xclZ5skP68Y/3U3FosaCOl9/oYgCCAYID2ziAmVs8m5MEF7vL92C/fJlRtUmBX8CPN8uNdGZcMm0r5LQRSirRDPmkrLsUbKVlVhsz+IJxX8/dzH+zaK9vp4dqGY2tpavpj7RG6WtjsTWbI+g+OXUb71pAJwB02X25pZXOpTXvedLvuRb6qbmqU1GLeFlx09bDh6ewgwdBE7T2XUitpFfI1yzKgqpnrJQrTv4aZ9KuaWjNioHi6OH2tk9ZplFE6ehPaEOBrAT6S4fad9hMkdoZJJwlye2M3hxQ7GGBwT0tnfPz5p2+lAPW1uh7zgJVJ0dfXQF4bsumLUuCaAPl3Bu7efyccDSBQSFiwYXTJ2XN0xSx4fWSkntqRkrPd/SABZOwdrYrxp1f9HAejNvpI9axmTAvALA0kZ8DBfvQUAAAAASUVORK5CYII=",
+  mud: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABsAAAAICAYAAAAIloRgAAABu0lEQVR4nIWSz2pTYRDFf/N9N7lN04KBWlJRSwpiwYJCwRbMphvxFXwWN76F76BLX0AtRSpB60qlVozFEptW89fm5n53xkWgEFPj2Q0DP86ZM8J/tLZSsTzK9XIJp4aZkfcOIVAoFCDnabf6HBy3eP/lUKaxJpbPnz21J48fMTcf43zKpWJMZBEiRrE4T6fXHQeI4BiZ6AyVLFMav9qEoLz89H2Mfz7crZStsrjAYilPmgn9TpfllWW8CM1mExHBzCbdiqCqnPxscfvWKqrQOP4B5oi8YJax/eEbe4enIg/vV61kfUw8EYY3JWAENXARLvIQUrw4MtMpR1LEx8Q5z3CQYAJZluFzORxK7aCBe1V7RzcJ3Fu/w1nym14SMAHnHA6FkHLt6hJpmiIyOsTFCT1oYDAYoBghDAmqJEnCabvH6/0jmehsY7ViNxfmmI0dzjnMDO/9yLv+O1l1Y52dN28xM4Iqe/t1cjMxQT27n49krLO/tXWjbFeWLiNZimVKFEXMzuTZqm7yYmeXzAwxO08rpnjvOUsG7NVPqH1tTrCnvupFerC5ZtJv4VxEzoF4zzAJdFLY/lifyvsDnqvThza6YPMAAAAASUVORK5CYII=",
+  rock: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAACcklEQVR4nH2TTWiUVxSGn3O/LxEbK4Iu1BibSYIBRRcajMZSS4VChO4sdGH33btTKIJLV4IuFBp/0NRNlSIkQoUqFutSLJlQYmZCMjNUOiZxUSOT3PO6+CafDk174S7u5bwvz/kz/ud89vlXOvnt18QYMTNu3bzN40f3ba3YNT9/ffhUUY5HIQkzI4RAqTzNijvFZ1NcvHSuRRs+fBz9YljjD37T8krE3XETCoYbzL9ezE3XdcDQp8P6T6Kfx3/RR+0dCEdmSFlsqVQmhCz0ZbXGts6tRBlj4w+499N1ayH6/ux5VeZquLJ6SCLGSLlcJjFwd3Zs384nhW7evHmLJHb19f+b6MrVUblWQJn3Kg2AWRZmElFiZrpMb18Piwv/MDk5ybWRCxYALo/clqTcJDTFZpYjr5olZvT29QBOtVpl48ebMs3hoePy2EqgpgnB8NU/CcL73tT/XkAeMDMOHjmmMDA4wOtX8+COlLXb3XF3FB2T8otnth7Fy78WMAtIYnlJhNiIVOZqpGlK0sSXxMREMU8xJ3Wo1+sUJ6bJEnDMjLa2NtI0TYHA82d/4mqwtLTEoUMH2btnd55WAIrFIqUXNQqF7oyuOV8gkiQhrS/U2bxpS1Zna2dDxzr+eD6FmVrqBu0UCt0kSUJEOU2tVuP3J2MWRm9cMrNAENTmKphAymq02q0P0yuVSs05g8VX85w+cyqn5uGju6RpSkMRR5iFFjGQr0qMzsxMmTRNGNi/iwP7+q1lIAEODH6p7q6ddHZ2IUUUEkLLRjmVSpVlj/w4+gMb1odcv+b2n/jmOzUaDQo7uvJ5mp2dRRJ374ysqXkH56RDx9P/aX8AAAAASUVORK5CYII=",
+};
+
+const OPTIONAL_ASSETS = {
+  fairyFly: 'fairy_fly_sheet.png',
+};
+
+const optionalImages = {};
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const gameoverFairyCanvas = document.getElementById('gameover-fairy-canvas');
+const gameoverFairyCtx = gameoverFairyCanvas.getContext('2d');
+gameoverFairyCtx.imageSmoothingEnabled = false;
+
+const W = 480, H = 270;
+const GROUND_Y = 220;
+
+// Sprite frame dimensions (must match the actual PNG files)
+const UNICORN_FRAME_W = 48;
+const UNICORN_FRAME_H = 40;
+const UNICORN_RUN_FRAMES = 4;
+
+const game = {
+  mode: 'autorun',
+  scene: 'menu',
+  score: 0,
+  highScores: { autorun: 0, control: 0 },
+  leaderboards: { autorun: [], control: [] }, // v0.5.1: top-5 initials/date scores per mode
+  pendingLeaderboardScore: null,              // v0.5.1: score waiting for initials
+  lastSavedLeaderboardId: null,               // v0.5.1: highlighted entry in game-over table
+  time: 0,
+  lastSpawn: 0,
+  unicorn: null,
+  entities: [],
+  particles: [],
+  worldX: 0,
+  keys: {},
+  touchLeft: false,
+  touchRight: false,
+  jumpQueued: false,
+  muted: false,
+  assetsReady: false,
+  passedHighscore: false,  // v0.3: SFX trigger flag
+  hearts: 6,                // v0.4: 6 hearts in 0.5 increments
+  lastHitWasNewHighscore: false,  // v0.4: for gameover splash label
+  runStartHighscore: 0,            // v0.5: accurate game-over highscore label
+  gameoverFx: {                    // v0.5: fairy and sparkle animation state
+    time: 0,
+    sparkles: [],
+    lastSparkle: 0,
+  },
+};
+
+
+// ============================================================
+// PWA / HOMESCREEN INSTALL CTA (v0.5.2)
+// ============================================================
+let deferredInstallPrompt = null;
+
+function isStandaloneDisplay() {
+  return window.navigator.standalone === true ||
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+}
+
+function isIosOrIpadOs() {
+  const ua = window.navigator.userAgent || '';
+  const platform = window.navigator.platform || '';
+  return /iPhone|iPad|iPod/i.test(ua) ||
+    (platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+}
+
+function updateInstallCta() {
+  const cta = document.getElementById('install-cta');
+  const copy = document.getElementById('install-copy');
+  const btn = document.getElementById('btn-install');
+  if (!cta || !copy || !btn) return;
+
+  if (isStandaloneDisplay()) {
+    cta.classList.add('hidden');
+    return;
+  }
+
+  if (isIosOrIpadOs()) {
+    cta.classList.remove('hidden');
+    btn.classList.add('hidden');
+    copy.innerHTML = 'Op iPhone/iPad: tik op <strong>Delen</strong> <span class="ios-share-glyph">↑</span> en kies <strong>Zet op beginscherm</strong>.';
+    return;
+  }
+
+  if (deferredInstallPrompt) {
+    cta.classList.remove('hidden');
+    btn.classList.remove('hidden');
+    copy.textContent = 'Installeer Unicorn Run als losse web-app.';
+    return;
+  }
+
+  cta.classList.add('hidden');
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  updateInstallCta();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  updateInstallCta();
+});
+
+// Load high scores
+try {
+  const saved = JSON.parse(localStorage.getItem('unicornRunHigh') || '{}');
+  game.highScores = { autorun: saved.autorun || 0, control: saved.control || 0 };
+} catch(e) {}
+
+const LEADERBOARD_MAX = 5;
+const LEADERBOARD_STORAGE_KEY = 'unicornRunLeaderboardV1';
+const LAST_INITIALS_STORAGE_KEY = 'unicornRunLastInitials';
+
+// v0.5.1: Load arcade-style top-5 leaderboards. Stored locally in the browser.
+try {
+  const savedBoards = JSON.parse(localStorage.getItem(LEADERBOARD_STORAGE_KEY) || '{}');
+  game.leaderboards = {
+    autorun: normalizeLeaderboard(savedBoards.autorun || []),
+    control: normalizeLeaderboard(savedBoards.control || []),
+  };
+} catch(e) {}
+
+function normalizeInitials(value) {
+  return String(value || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 3);
+}
+
+function normalizeLeaderboard(entries) {
+  return (Array.isArray(entries) ? entries : [])
+    .map((entry, index) => ({
+      id: entry.id || ('old-' + index + '-' + (entry.score || 0)),
+      initials: normalizeInitials(entry.initials || '???') || '???',
+      score: Math.max(0, Number(entry.score) || 0),
+      date: entry.date || formatDate(entry.timestamp || Date.now()),
+      timestamp: Number(entry.timestamp) || Date.now(),
+    }))
+    .sort((a, b) => b.score - a.score || a.timestamp - b.timestamp)
+    .slice(0, LEADERBOARD_MAX);
+}
+
+function saveLeaderboards() {
+  try {
+    localStorage.setItem(LEADERBOARD_STORAGE_KEY, JSON.stringify(game.leaderboards));
+  } catch(e) {}
+}
+
+function formatDate(timestamp = Date.now()) {
+  const d = new Date(timestamp);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '/' + m + '/' + day;
+}
+
+function modeLabel(mode) {
+  return mode === 'control' ? 'Gecontroleerd' : 'Auto-Run';
+}
+
+function isLeaderboardWorthy(mode, score) {
+  if (score <= 0) return false;
+  const board = game.leaderboards[mode] || [];
+  return board.length < LEADERBOARD_MAX || score > board[board.length - 1].score;
+}
+
+function addLeaderboardEntry(mode, initials, score) {
+  const timestamp = Date.now();
+  const entry = {
+    id: 'score-' + timestamp + '-' + Math.floor(Math.random() * 10000),
+    initials: normalizeInitials(initials) || 'NB',
+    score: Math.max(0, Number(score) || 0),
+    date: formatDate(timestamp),
+    timestamp,
+  };
+  const board = game.leaderboards[mode] || [];
+  board.push(entry);
+  game.leaderboards[mode] = normalizeLeaderboard(board);
+  game.lastSavedLeaderboardId = entry.id;
+  try { localStorage.setItem(LAST_INITIALS_STORAGE_KEY, entry.initials); } catch(e) {}
+  saveLeaderboards();
+  renderLeaderboard(mode);
+}
+
+function renderLeaderboard(mode = game.mode) {
+  const rowsEl = document.getElementById('scoreboard-rows');
+  const modeEl = document.getElementById('scoreboard-mode');
+  if (!rowsEl || !modeEl) return;
+  modeEl.textContent = modeLabel(mode);
+  const board = game.leaderboards[mode] || [];
+  let html = '';
+  for (let i = 0; i < LEADERBOARD_MAX; i++) {
+    const entry = board[i];
+    const rank = (i + 1) + '.';
+    if (entry) {
+      const highlight = entry.id === game.lastSavedLeaderboardId ? ' highlight' : '';
+      html += '<div class="scoreboard-row' + highlight + '">' +
+        '<span>' + rank + '</span>' +
+        '<span>' + entry.initials + '</span>' +
+        '<span>' + entry.score + '</span>' +
+        '<span>' + entry.date + '</span>' +
+      '</div>';
+    } else {
+      html += '<div class="scoreboard-row scoreboard-empty">' +
+        '<span>' + rank + '</span><span>--</span><span>---</span><span>----</span>' +
+      '</div>';
+    }
+  }
+  rowsEl.innerHTML = html;
+}
+
+function showInitialsEntry(show) {
+  const wrap = document.getElementById('initials-entry');
+  const input = document.getElementById('initials-input');
+  const btn = document.getElementById('btn-save-score');
+  if (!wrap || !input || !btn) return;
+  if (show) {
+    let saved = 'NB';
+    try { saved = normalizeInitials(localStorage.getItem(LAST_INITIALS_STORAGE_KEY)) || 'NB'; } catch(e) {}
+    input.value = saved;
+    btn.disabled = normalizeInitials(input.value).length < 2;
+    wrap.classList.remove('hidden');
+    setTimeout(() => { try { input.focus(); input.select(); } catch(e) {} }, 80);
+  } else {
+    wrap.classList.add('hidden');
+  }
+}
+
+function submitLeaderboardScore() {
+  const pending = game.pendingLeaderboardScore;
+  if (!pending) return;
+  const input = document.getElementById('initials-input');
+  const initials = normalizeInitials(input ? input.value : 'NB');
+  if (initials.length < 2) return;
+  addLeaderboardEntry(pending.mode, initials, pending.score);
+  game.pendingLeaderboardScore = null;
+  showInitialsEntry(false);
+}
+
+// Load mute pref
+try {
+  game.muted = localStorage.getItem('unicornRunMuted') === '1';
+} catch(e) {}
+
+// ============================================================
+// ASSET LOADING
+// ============================================================
+
+const images = {};
+function loadAllImages() {
+  const names = Object.keys(ASSETS);
+  return Promise.all(names.map(name => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => { images[name] = img; resolve(); };
+    img.onerror = () => reject(new Error('Failed to load ' + name));
+    img.src = ASSETS[name];
+  })));
+}
+
+function loadOptionalImage(name, src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => { optionalImages[name] = img; resolve(true); };
+    img.onerror = () => {
+      console.log('Optional image not found — skipping ' + name);
+      resolve(false);
+    };
+    img.src = src;
+  });
+}
+
+// Audio: separate MP3 files in same folder
+const MAIN_MUSIC_VOLUME = 0.50;
+const GAMEOVER_MUSIC_VOLUME = 0.42;
+
+const music = new Audio('pixel_hooves.mp3');
+music.loop = true;
+music.volume = MAIN_MUSIC_VOLUME;
+music.preload = 'auto';
+music.addEventListener('error', () => {
+  console.log('Music file not found — running without main music.');
+});
+
+const gameoverMusic = new Audio('gameover_lullaby.mp3');
+gameoverMusic.loop = true;
+gameoverMusic.volume = GAMEOVER_MUSIC_VOLUME;
+gameoverMusic.preload = 'auto';
+gameoverMusic.addEventListener('error', () => {
+  console.log('Game-over lullaby not found — running without game-over music.');
+});
+let gameoverMusicPrimed = false;
+
+// ===========================================================================
+// SFX system: hybrid (MP3 override if file exists, else Web Audio synthesis)
+// ===========================================================================
+const SFX_NAMES = ['jump', 'rainbow', 'icecream', 'bump', 'highscore'];
+const sfx = {
+  ctx: null,
+  enabled: false,
+  volume: 0.6,
+  overrides: {},   // name -> HTMLAudioElement (if MP3 loaded successfully)
+
+  init() {
+    if (this.enabled) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) this.ctx = new AC();
+      if (this.ctx && this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
+    } catch (e) { console.log('AudioContext init failed:', e); }
+    // Try to load MP3 overrides (silently fail if missing)
+    for (const name of SFX_NAMES) {
+      const audio = new Audio('sfx_' + name + '.mp3');
+      audio.preload = 'auto';
+      audio.volume = this.volume;
+      let loaded = false;
+      audio.addEventListener('canplaythrough', () => {
+        if (!loaded) {
+          loaded = true;
+          this.overrides[name] = audio;
+        }
+      }, { once: true });
+      audio.addEventListener('error', () => {
+        // silent — synthesis will be used
+      });
+    }
+    this.enabled = true;
+  },
+
+  play(name) {
+    if (!this.enabled || game.muted) return;
+    // Use MP3 override if available
+    if (this.overrides[name]) {
+      try {
+        const clone = this.overrides[name].cloneNode();
+        clone.volume = this.volume;
+        const p = clone.play();
+        if (p && p.catch) p.catch(() => {});
+      } catch (e) {}
+      return;
+    }
+    // Fallback to synthesis
+    if (this.ctx && this.synth[name]) {
+      try { this.synth[name](); } catch (e) {}
+    }
+  },
+
+  // Helper: schedule a tone
+  tone(freq, startTime, duration, type = 'square', volMult = 1) {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, startTime);
+    const peak = this.volume * volMult * 0.3;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(peak, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.05);
+  },
+
+  synth: {
+    jump() {
+      const ctx = sfx.ctx;
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      // Frequency sweep 200 -> 500 Hz
+      osc.frequency.setValueAtTime(200, now);
+      osc.frequency.exponentialRampToValueAtTime(500, now + 0.12);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(sfx.volume * 0.25, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    },
+    rainbow() {
+      const ctx = sfx.ctx;
+      const now = ctx.currentTime;
+      // C5, E5, G5 arpeggio (523, 659, 784)
+      const notes = [523.25, 659.25, 783.99];
+      notes.forEach((freq, i) => {
+        sfx.tone(freq, now + i * 0.06, 0.18, 'sine', 1.2);
+      });
+    },
+    icecream() {
+      const ctx = sfx.ctx;
+      const now = ctx.currentTime;
+      // A5 ping, 880 Hz
+      sfx.tone(880, now, 0.2, 'sine', 1.0);
+      // Slight high harmonic for sparkle
+      sfx.tone(1760, now, 0.12, 'sine', 0.4);
+    },
+    bump() {
+      const ctx = sfx.ctx;
+      const now = ctx.currentTime;
+      // Filtered noise burst
+      const bufferSize = ctx.sampleRate * 0.15;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 400;
+      const gain = ctx.createGain();
+      gain.gain.value = sfx.volume * 0.4;
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start(now);
+      noise.stop(now + 0.15);
+    },
+    highscore() {
+      const ctx = sfx.ctx;
+      const now = ctx.currentTime;
+      // Ascending fanfare: C5, E5, G5, C6, E6
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+      notes.forEach((freq, i) => {
+        sfx.tone(freq, now + i * 0.1, 0.2, 'square', 0.9);
+      });
+    },
+  },
+};
+
+function applyMute() {
+  music.muted = game.muted;
+  gameoverMusic.muted = game.muted;
+  document.getElementById('mute-btn').textContent = game.muted ? '🔇' : '🔊';
+  try { localStorage.setItem('unicornRunMuted', game.muted ? '1' : '0'); } catch(e) {}
+}
+
+function fadeAudio(audio, targetVolume, durationMs, pauseWhenDone = false, resetWhenDone = false) {
+  audio._fadeId = (audio._fadeId || 0) + 1;
+  const fadeId = audio._fadeId;
+  const startVolume = audio.volume;
+  const startTime = performance.now();
+
+  function step(now) {
+    if (audio._fadeId !== fadeId) return;
+    const t = Math.min(1, (now - startTime) / durationMs);
+    audio.volume = startVolume + (targetVolume - startVolume) * t;
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      audio.volume = targetVolume;
+      if (pauseWhenDone) {
+        audio.pause();
+        if (resetWhenDone) {
+          try { audio.currentTime = 0; } catch(e) {}
+        }
+      }
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function primeGameoverMusic() {
+  // iOS/Safari are happier if the second music element has been unlocked
+  // during a user gesture. This is silent and immediately paused.
+  if (gameoverMusicPrimed) return;
+  try {
+    const oldMuted = gameoverMusic.muted;
+    const oldVolume = gameoverMusic.volume;
+    gameoverMusic.muted = true;
+    gameoverMusic.volume = 0;
+    const p = gameoverMusic.play();
+    if (p && p.then) {
+      p.then(() => {
+        gameoverMusic.pause();
+        try { gameoverMusic.currentTime = 0; } catch(e) {}
+        gameoverMusic.volume = oldVolume;
+        gameoverMusic.muted = oldMuted || game.muted;
+        gameoverMusicPrimed = true;
+      }).catch(() => {
+        gameoverMusic.volume = oldVolume;
+        gameoverMusic.muted = oldMuted || game.muted;
+      });
+    }
+  } catch(e) {}
+}
+
+function startMusic() {
+  // First user gesture: also init SFX system
+  sfx.init();
+  stopGameoverMusic(true);
+  primeGameoverMusic();
+  music._fadeId = (music._fadeId || 0) + 1; // cancel pending fades
+  music.volume = MAIN_MUSIC_VOLUME;
+  if (music.paused) {
+    const p = music.play();
+    if (p && p.catch) p.catch(() => {});
+  }
+}
+
+function startGameoverMusic() {
+  try { gameoverMusic.currentTime = 0; } catch(e) {}
+  gameoverMusic._fadeId = (gameoverMusic._fadeId || 0) + 1; // cancel pending fades
+  gameoverMusic.volume = 0;
+  const p = gameoverMusic.play();
+  if (p && p.catch) p.catch(() => {});
+  fadeAudio(gameoverMusic, GAMEOVER_MUSIC_VOLUME, 900, false, false);
+}
+
+function stopGameoverMusic(immediate = false) {
+  gameoverMusic._fadeId = (gameoverMusic._fadeId || 0) + 1; // cancel pending fades
+  if (immediate) {
+    gameoverMusic.pause();
+    gameoverMusic.volume = GAMEOVER_MUSIC_VOLUME;
+    try { gameoverMusic.currentTime = 0; } catch(e) {}
+  } else if (!gameoverMusic.paused) {
+    fadeAudio(gameoverMusic, 0, 450, true, true);
+  }
+}
+
+// Entity dimensions (sprite native sizes)
+const SPRITE_DIMS = {
+  rainbow:  { w: 24, h: 14 },
+  icecream: { w: 13, h: 20 },
+  mud:      { w: 27, h: 8 },
+  rock:     { w: 18, h: 16 },
+};
+
+// ============================================================
+// GAME OBJECTS
+// ============================================================
+
+function createUnicorn() {
+  // Hitbox slightly smaller than sprite for forgiveness
+  return {
+    x: 60,
+    y: GROUND_Y - UNICORN_FRAME_H,
+    vx: 0,
+    vy: 0,
+    width: UNICORN_FRAME_W,
+    height: UNICORN_FRAME_H,
+    onGround: true,
+    jumping: false,
+    animFrame: 0,
+    animTime: 0,
+    flashTime: 0,
+  };
+}
+
+function spawnEntity() {
+  const r = Math.random();
+  let type;
+  if (r < 0.4) type = 'rainbow';
+  else if (r < 0.7) type = 'icecream';
+  else if (r < 0.88) type = 'mud';
+  else type = 'rock';
+
+  const dims = SPRITE_DIMS[type];
+  const entity = {
+    type: type,
+    x: W + 20,
+    y: 0,
+    width: dims.w,
+    height: dims.h,
+    collected: false,
+  };
+
+  if (type === 'rainbow') {
+    // Float at jump-reachable heights
+    entity.y = GROUND_Y - 50 - Math.random() * 35;
+  } else if (type === 'icecream') {
+    entity.y = GROUND_Y - dims.h - Math.random() * 40;
+  } else if (type === 'mud') {
+    // 3D-perspective sprite: lower so bottom of perspective sits at ground
+    entity.y = GROUND_Y - dims.h + 3;
+  } else if (type === 'rock') {
+    // 3D-perspective sprite: lower so base sits at ground
+    entity.y = GROUND_Y - dims.h + 3;
+  }
+
+  return entity;
+}
+
+function addParticle(x, y, color) {
+  game.particles.push({
+    x: x, y: y,
+    vx: (Math.random() - 0.5) * 3,
+    vy: -Math.random() * 3 - 1,
+    life: 30,
+    color: color,
+    size: 2,
+  });
+}
+
+// ============================================================
+// UPDATE
+// ============================================================
+
+function updateUnicorn(dt) {
+  const u = game.unicorn;
+
+  if (game.mode === 'autorun') {
+    u.vx = 0;
+  } else {
+    let move = 0;
+    if (game.keys['ArrowLeft'] || game.keys['KeyA'] || game.touchLeft) move -= 1;
+    if (game.keys['ArrowRight'] || game.keys['KeyD'] || game.touchRight) move += 1;
+    u.vx = move * 2.5;
+    u.x += u.vx;
+    if (u.x < 0) u.x = 0;
+    if (u.x > W - u.width) u.x = W - u.width;
+  }
+
+  const jumpPressed = game.keys['Space'] || game.keys['ArrowUp'] || game.keys['KeyW'] || game.jumpQueued;
+  if (jumpPressed && u.onGround) {
+    u.vy = -8;
+    u.onGround = false;
+    u.jumping = true;
+    sfx.play('jump');
+  }
+  game.jumpQueued = false;
+
+  u.vy += 0.35;
+  u.y += u.vy;
+
+  if (u.y >= GROUND_Y - u.height) {
+    u.y = GROUND_Y - u.height;
+    u.vy = 0;
+    u.onGround = true;
+    u.jumping = false;
+  }
+
+  u.animTime += dt;
+  if (u.animTime > 100) {
+    u.animTime = 0;
+    u.animFrame = (u.animFrame + 1) % UNICORN_RUN_FRAMES;
+  }
+
+  if (u.flashTime > 0) u.flashTime -= dt;
+}
+
+function updateEntities(dt) {
+  const scrollSpeed = game.mode === 'autorun' ? 2.2 : 1.8;
+
+  for (const e of game.entities) {
+    e.x -= scrollSpeed;
+  }
+
+  game.entities = game.entities.filter(e => e.x + e.width > -20 && !e.collected);
+
+  game.lastSpawn += dt;
+  const spawnInterval = 800 + Math.random() * 600;
+  if (game.lastSpawn > spawnInterval) {
+    game.lastSpawn = 0;
+    game.entities.push(spawnEntity());
+  }
+
+  game.worldX += scrollSpeed;
+}
+
+function updateParticles(dt) {
+  for (const p of game.particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.2;
+    p.life--;
+  }
+  game.particles = game.particles.filter(p => p.life > 0);
+}
+
+function resetGameoverFx() {
+  game.gameoverFx.time = 0;
+  game.gameoverFx.sparkles = [];
+  game.gameoverFx.lastSparkle = 0;
+  clearGameoverFairyOverlay();
+}
+
+function getFairyPosition() {
+  const t = game.gameoverFx.time / 1000;
+  const travel = W + 140;
+  const x = (t * 34) % travel - 70;
+  const y = 72 + Math.sin(t * 1.25) * 22 + Math.sin(t * 0.43) * 8;
+  return { x, y };
+}
+
+function updateGameoverFx(dt) {
+  game.gameoverFx.time += dt;
+  game.gameoverFx.lastSparkle += dt;
+
+  const pos = getFairyPosition();
+  if (game.gameoverFx.lastSparkle > 120) {
+    game.gameoverFx.lastSparkle = 0;
+    for (let i = 0; i < 2; i++) {
+      game.gameoverFx.sparkles.push({
+        x: pos.x + 8 + Math.random() * 10,
+        y: pos.y + 26 + (Math.random() - 0.5) * 14,
+        vx: -0.25 - Math.random() * 0.45,
+        vy: -0.10 + Math.random() * 0.25,
+        life: 42 + Math.random() * 18,
+        size: Math.random() < 0.75 ? 2 : 1,
+        color: Math.random() < 0.55 ? '#fff7a8' : '#ffffff',
+      });
+    }
+  }
+
+  for (const sp of game.gameoverFx.sparkles) {
+    sp.x += sp.vx;
+    sp.y += sp.vy;
+    sp.life -= 1;
+  }
+  game.gameoverFx.sparkles = game.gameoverFx.sparkles.filter(sp => sp.life > 0);
+}
+
+function clearGameoverFairyOverlay() {
+  gameoverFairyCtx.clearRect(0, 0, W, H);
+}
+
+function drawGameoverFairyOverlay() {
+  clearGameoverFairyOverlay();
+  if (game.scene !== 'gameover') return;
+
+  const img = optionalImages.fairyFly;
+  if (!img) return; // graceful fallback if optional sprite is absent
+
+  for (const sp of game.gameoverFx.sparkles) {
+    const alpha = Math.max(0, Math.min(1, sp.life / 50));
+    gameoverFairyCtx.globalAlpha = alpha * 0.85;
+    gameoverFairyCtx.fillStyle = sp.color;
+    gameoverFairyCtx.fillRect(Math.floor(sp.x), Math.floor(sp.y), sp.size, sp.size);
+  }
+  gameoverFairyCtx.globalAlpha = 1;
+
+  const frameCount = 4;
+  const frameW = img.width / frameCount;
+  const frameH = img.height;
+  const frame = Math.floor(game.gameoverFx.time / 150) % frameCount;
+  const pos = getFairyPosition();
+  const bob = Math.sin(game.gameoverFx.time / 190) * 2;
+
+  gameoverFairyCtx.drawImage(
+    img,
+    frame * frameW, 0, frameW, frameH,
+    Math.floor(pos.x), Math.floor(pos.y + bob), 64, 64
+  );
+}
+
+function checkCollisions() {
+  const u = game.unicorn;
+  // Tight hitbox: shrink from full sprite for forgiveness
+  // Sprite is 48x40 but actual unicorn body is roughly centered
+  const ub = {
+    x: u.x + 8, y: u.y + 10,
+    w: u.width - 16, h: u.height - 14,
+  };
+
+  for (const e of game.entities) {
+    if (e.collected) continue;
+    if (ub.x < e.x + e.width && ub.x + ub.w > e.x &&
+        ub.y < e.y + e.height && ub.y + ub.h > e.y) {
+      if (e.type === 'rainbow') {
+        game.score += 10;
+        e.collected = true;
+        sfx.play('rainbow');
+        for (let i = 0; i < 8; i++) {
+          addParticle(e.x + e.width/2, e.y + e.height/2,
+            ['#ff6b6b','#ffeb6b','#6bff8f','#6bb6ff','#c66dff'][i % 5]);
+        }
+      } else if (e.type === 'icecream') {
+        game.score += 5;
+        e.collected = true;
+        sfx.play('icecream');
+        for (let i = 0; i < 6; i++) {
+          addParticle(e.x + e.width/2, e.y + e.height/2, '#fff8fc');
+        }
+      } else if (e.type === 'mud' || e.type === 'rock') {
+        if (u.flashTime <= 0) {
+          u.flashTime = 600;
+          u.vy = -3;
+          sfx.play('bump');
+          // v0.4: hearts damage
+          const damage = (e.type === 'mud') ? 0.5 : 1.0;
+          game.hearts = Math.max(0, game.hearts - damage);
+          for (let i = 0; i < 5; i++) {
+            addParticle(u.x + u.width/2, u.y + u.height,
+              e.type === 'mud' ? '#6b3a1a' : '#888');
+          }
+          if (game.hearts <= 0) {
+            triggerGameOver();
+          }
+        }
+      }
+    }
+  }
+
+  const key = game.mode;
+  if (game.score > game.highScores[key]) {
+    // Fire highscore SFX once per run, when we first pass the run-start high.
+    // v0.5: game-over badge now uses runStartHighscore instead of the live-updated highscore.
+    if (!game.passedHighscore && game.score > game.runStartHighscore) {
+      if (game.runStartHighscore > 0) sfx.play('highscore');
+      game.passedHighscore = true;
+    }
+    game.highScores[key] = game.score;
+    try {
+      localStorage.setItem('unicornRunHigh', JSON.stringify(game.highScores));
+    } catch(e) {}
+  }
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function drawSky() {
+  const grd = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
+  grd.addColorStop(0, '#ffd6f0');
+  grd.addColorStop(0.5, '#ffe0d6');
+  grd.addColorStop(1, '#fff5d6');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, GROUND_Y);
+}
+
+function drawClouds() {
+  const offset = (game.worldX * 0.15) % 200;
+  for (let i = 0; i < 4; i++) {
+    const cx = (i * 160 - offset + 600) % 600 - 60;
+    const cy = 30 + (i * 13) % 40;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+    ctx.arc(cx + 14, cy + 2, 10, 0, Math.PI * 2);
+    ctx.arc(cx + 26, cy, 9, 0, Math.PI * 2);
+    ctx.arc(cx + 8, cy - 6, 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawHills() {
+  const offset = (game.worldX * 0.4) % 120;
+  ctx.fillStyle = '#c5a0e5';
+  for (let i = -1; i < 6; i++) {
+    const hx = i * 120 - offset;
+    ctx.beginPath();
+    ctx.moveTo(hx, GROUND_Y);
+    ctx.quadraticCurveTo(hx + 60, GROUND_Y - 60, hx + 120, GROUND_Y);
+    ctx.fill();
+  }
+  const offset2 = (game.worldX * 0.7) % 90;
+  ctx.fillStyle = '#a070d0';
+  for (let i = -1; i < 7; i++) {
+    const hx = i * 90 - offset2;
+    ctx.beginPath();
+    ctx.moveTo(hx, GROUND_Y);
+    ctx.quadraticCurveTo(hx + 45, GROUND_Y - 35, hx + 90, GROUND_Y);
+    ctx.fill();
+  }
+}
+
+function drawGround() {
+  ctx.fillStyle = '#7dd87d';
+  ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+  ctx.fillStyle = '#5fb55f';
+  ctx.fillRect(0, GROUND_Y, W, 4);
+
+  const offset = game.worldX % 24;
+  ctx.fillStyle = '#5fb55f';
+  for (let i = -1; i < 22; i++) {
+    const gx = i * 24 - offset;
+    ctx.fillRect(gx, GROUND_Y + 6, 2, 4);
+    ctx.fillRect(gx + 3, GROUND_Y + 8, 2, 3);
+    ctx.fillRect(gx + 12, GROUND_Y + 7, 2, 3);
+  }
+}
+
+function drawEntities() {
+  for (const e of game.entities) {
+    if (e.collected) continue;
+    const img = images[e.type];
+    if (img) {
+      ctx.drawImage(img, Math.floor(e.x), Math.floor(e.y));
+    }
+  }
+}
+
+function drawUnicorn() {
+  const u = game.unicorn;
+  if (!u) return;  // FIX v0.2.1: skip drawing if not in game yet
+  if (u.flashTime > 0 && Math.floor(u.flashTime / 80) % 2 === 0) {
+    return;
+  }
+  const drawX = Math.floor(u.x);
+  const drawY = Math.floor(u.y);
+
+  if (u.onGround) {
+    const img = images.unicornRun;
+    if (img) {
+      ctx.drawImage(img,
+        u.animFrame * UNICORN_FRAME_W, 0, UNICORN_FRAME_W, UNICORN_FRAME_H,
+        drawX, drawY, UNICORN_FRAME_W, UNICORN_FRAME_H);
+    }
+  } else {
+    const img = images.unicornJump;
+    if (img) {
+      ctx.drawImage(img, drawX, drawY);
+    }
+  }
+}
+
+function drawParticles() {
+  for (const p of game.particles) {
+    ctx.fillStyle = p.color;
+    const alpha = Math.min(1, p.life / 30);
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(Math.floor(p.x), Math.floor(p.y), p.size, p.size);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  drawSky();
+  drawClouds();
+  drawHills();
+  drawGround();
+  drawEntities();
+  drawUnicorn();
+  drawParticles();
+  // v0.4: hearts on top, but only during play or pause
+  if (game.scene === 'play' || game.scene === 'pause' || game.scene === 'gameover') {
+    drawHearts();
+  }
+}
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+
+let lastTime = 0;
+let renderErrorShown = false;
+function loop(timestamp) {
+  const dt = Math.min(50, timestamp - lastTime);
+  lastTime = timestamp;
+
+  try {
+    if (game.scene === 'play') {
+      game.time += dt;
+      updateUnicorn(dt);
+      updateEntities(dt);
+      updateParticles(dt);
+      checkCollisions();
+    } else if (game.scene === 'gameover') {
+      updateGameoverFx(dt);
+    }
+    render();
+    drawGameoverFairyOverlay();
+  } catch (err) {
+    if (!renderErrorShown) {
+      renderErrorShown = true;
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:60px;left:10px;right:10px;background:#600;color:#fff;padding:12px;z-index:9999;font-family:monospace;font-size:12px;white-space:pre-wrap;border-radius:6px;';
+      div.textContent = 'RENDER ERROR: ' + err.message + '\n\n' + (err.stack || '').substring(0, 800);
+      document.body.appendChild(div);
+      console.error(err);
+    }
+  }
+
+  document.getElementById('score').textContent = game.score;
+  document.getElementById('high').textContent = 'Best: ' + (game.highScores[game.mode] || 0);
+
+  requestAnimationFrame(loop);
+}
+
+// ============================================================
+// SCENE MANAGEMENT
+// ============================================================
+
+function startGame(mode) {
+  game.mode = mode;
+  game.scene = 'play';
+  game.score = 0;
+  game.time = 0;
+  game.lastSpawn = 0;
+  game.worldX = 0;
+  game.unicorn = createUnicorn();
+  game.entities = [];
+  game.particles = [];
+  game.passedHighscore = false;
+  game.hearts = 6;                       // v0.4: reset hearts
+  game.lastHitWasNewHighscore = false;   // v0.4
+  game.runStartHighscore = game.highScores[mode] || 0; // v0.5
+  game.pendingLeaderboardScore = null;   // v0.5.1
+  game.lastSavedLeaderboardId = null;    // v0.5.1
+  resetGameoverFx();
+  stopGameoverMusic(true);
+
+  document.getElementById('start-menu').classList.add('hidden');
+  document.getElementById('pause-menu').classList.add('hidden');
+  document.getElementById('gameover-menu').classList.add('hidden');
+
+  // First click — start music (browser auto-play policy compliant)
+  startMusic();
+
+  const tc = document.getElementById('touch-controls');
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    tc.classList.add('visible');
+    document.getElementById('btn-left').style.visibility = mode === 'control' ? 'visible' : 'hidden';
+    document.getElementById('btn-right').style.visibility = mode === 'control' ? 'visible' : 'hidden';
+  }
+}
+
+function showMenu() {
+  game.scene = 'menu';
+  game.pendingLeaderboardScore = null;
+  showInitialsEntry(false);
+  stopGameoverMusic(true);
+  if (!music.paused) music.pause();
+  resetGameoverFx();
+  document.getElementById('start-menu').classList.remove('hidden');
+  document.getElementById('pause-menu').classList.add('hidden');
+  document.getElementById('gameover-menu').classList.add('hidden');
+  document.getElementById('touch-controls').classList.remove('visible');
+}
+
+function pauseGame() {
+  if (game.scene !== 'play') return;
+  game.scene = 'pause';
+  document.getElementById('pause-menu').classList.remove('hidden');
+  if (!music.paused) music.pause();
+}
+
+function resumeGame() {
+  game.scene = 'play';
+  document.getElementById('pause-menu').classList.add('hidden');
+  startMusic();
+}
+
+// v0.4: Game over
+function triggerGameOver() {
+  game.scene = 'gameover';
+  // v0.5: compare final score with the highscore that existed at run start.
+  // This avoids the live-updated highscore masking a true new record.
+  game.lastHitWasNewHighscore = game.score > game.runStartHighscore;
+  game.lastSavedLeaderboardId = null;
+  resetGameoverFx();
+  // Fade from running music into the melancholic game-over lullaby.
+  if (!music.paused) fadeAudio(music, 0, 700, true, false);
+  startGameoverMusic();
+  // Update UI
+  document.getElementById('gameover-score').textContent = game.score;
+  document.getElementById('gameover-best').textContent =
+    'Beste ooit: ' + (game.highScores[game.mode] || 0);
+  const newBadge = document.getElementById('gameover-new');
+  if (game.lastHitWasNewHighscore) {
+    newBadge.classList.remove('hidden');
+  } else {
+    newBadge.classList.add('hidden');
+  }
+  renderLeaderboard(game.mode);
+  if (isLeaderboardWorthy(game.mode, game.score)) {
+    game.pendingLeaderboardScore = { mode: game.mode, score: game.score };
+    showInitialsEntry(true);
+  } else {
+    game.pendingLeaderboardScore = null;
+    showInitialsEntry(false);
+  }
+  document.getElementById('gameover-menu').classList.remove('hidden');
+  document.getElementById('touch-controls').classList.remove('visible');
+}
+
+// v0.4: Heart rendering (procedural pixel hearts, no extra sprite needed)
+function drawHearts() {
+  const startX = 60;
+  const y = 14;
+  const heartW = 14;
+  const heartH = 12;
+  const gap = 4;
+  // Draw 6 heart slots
+  for (let i = 0; i < 6; i++) {
+    const x = startX + i * (heartW + gap);
+    const heartValue = game.hearts - i;  // 1=full, 0.5=half, <=0=empty
+    drawHeart(x, y, heartValue);
+  }
+}
+
+function drawHeart(x, y, value) {
+  // Heart shape (14x12 pixels):
+  //  .##..##.
+  //  .####.####.
+  //  .##########.
+  //  ..########..
+  //   ..######..
+  //    ..####..
+  //     ..##..
+  //      .##.
+  //
+  // Simplified rendering with fillRect per pixel
+  const fullColor = '#ff3b75';
+  const fullShadow = '#c41a4a';
+  const emptyColor = 'rgba(255, 255, 255, 0.18)';
+  const emptyOutline = 'rgba(255, 255, 255, 0.4)';
+
+  // Heart pixel pattern (1 = pixel, 0 = transparent), 14 wide × 12 tall
+  const pattern = [
+    "..##....##..",
+    ".####..####.",
+    ".##########.",
+    ".##########.",
+    ".##########.",
+    "..########..",
+    "..########..",
+    "...######...",
+    "....####....",
+    "....####....",
+    ".....##.....",
+    ".....##.....",
+  ];
+
+  if (value <= 0) {
+    // Empty heart: outline only
+    ctx.fillStyle = emptyColor;
+    for (let py = 0; py < pattern.length; py++) {
+      for (let px = 0; px < pattern[py].length; px++) {
+        if (pattern[py][px] === '#') {
+          ctx.fillRect(x + px, y + py, 1, 1);
+        }
+      }
+    }
+    return;
+  }
+
+  // Full or half heart
+  const half = value >= 1 ? pattern[0].length : Math.floor(pattern[0].length / 2);
+
+  // Fill (left half always if >=0.5, right half only if >=1)
+  ctx.fillStyle = fullColor;
+  for (let py = 0; py < pattern.length; py++) {
+    for (let px = 0; px < pattern[py].length; px++) {
+      if (pattern[py][px] === '#' && px < half) {
+        ctx.fillRect(x + px, y + py, 1, 1);
+      }
+    }
+  }
+  // Right half empty (for half-heart)
+  if (value < 1) {
+    ctx.fillStyle = emptyColor;
+    for (let py = 0; py < pattern.length; py++) {
+      for (let px = half; px < pattern[py].length; px++) {
+        if (pattern[py][px] === '#') {
+          ctx.fillRect(x + px, y + py, 1, 1);
+        }
+      }
+    }
+  }
+  // Shadow detail at bottom row for depth (only on full pixels)
+  ctx.fillStyle = fullShadow;
+  for (let px = 0; px < pattern[pattern.length-1].length; px++) {
+    if (pattern[pattern.length-1][px] === '#' && px < half) {
+      ctx.fillRect(x + px, y + pattern.length - 1, 1, 1);
+    }
+  }
+}
+
+// ============================================================
+// INPUT
+// ============================================================
+
+window.addEventListener('keydown', (e) => {
+  const target = e.target;
+  const isTextInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
+  if (isTextInput) return;
+  game.keys[e.code] = true;
+  if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'ArrowDown' ||
+      e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+    e.preventDefault();
+  }
+  if (e.code === 'Escape' || e.code === 'KeyP') {
+    if (game.scene === 'play') pauseGame();
+    else if (game.scene === 'pause') resumeGame();
+  }
+  if (e.code === 'KeyM') {
+    game.muted = !game.muted;
+    applyMute();
+  }
+});
+
+window.addEventListener('keyup', (e) => {
+  const target = e.target;
+  const isTextInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA');
+  if (isTextInput) return;
+  game.keys[e.code] = false;
+});
+
+canvas.addEventListener('pointerdown', (e) => {
+  if (game.scene === 'play' && game.mode === 'autorun') {
+    game.jumpQueued = true;
+  }
+});
+
+function bindHold(btnId, onDown, onUp) {
+  const btn = document.getElementById(btnId);
+  const down = (e) => { e.preventDefault(); onDown(); };
+  const up = (e) => { e.preventDefault(); if (onUp) onUp(); };
+  btn.addEventListener('pointerdown', down);
+  btn.addEventListener('pointerup', up);
+  btn.addEventListener('pointercancel', up);
+  btn.addEventListener('pointerleave', up);
+}
+
+bindHold('btn-left',
+  () => { game.touchLeft = true; },
+  () => { game.touchLeft = false; });
+bindHold('btn-right',
+  () => { game.touchRight = true; },
+  () => { game.touchRight = false; });
+bindHold('btn-jump',
+  () => { game.jumpQueued = true; },
+  null);
+
+const initialsInput = document.getElementById('initials-input');
+if (initialsInput) {
+  initialsInput.addEventListener('input', () => {
+    initialsInput.value = normalizeInitials(initialsInput.value);
+    const btn = document.getElementById('btn-save-score');
+    if (btn) btn.disabled = normalizeInitials(initialsInput.value).length < 2;
+  });
+  initialsInput.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter') {
+      e.preventDefault();
+      submitLeaderboardScore();
+    }
+  });
+}
+const saveScoreBtn = document.getElementById('btn-save-score');
+if (saveScoreBtn) {
+  saveScoreBtn.addEventListener('click', submitLeaderboardScore);
+}
+
+
+const installBtn = document.getElementById('btn-install');
+if (installBtn) {
+  installBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) {
+      updateInstallCta();
+      return;
+    }
+    deferredInstallPrompt.prompt();
+    try { await deferredInstallPrompt.userChoice; } catch(e) {}
+    deferredInstallPrompt = null;
+    updateInstallCta();
+  });
+}
+
+document.getElementById('btn-autorun').addEventListener('click', () => startGame('autorun'));
+document.getElementById('btn-control').addEventListener('click', () => startGame('control'));
+document.getElementById('btn-resume').addEventListener('click', resumeGame);
+document.getElementById('btn-menu').addEventListener('click', showMenu);
+// v0.4: gameover handlers
+document.getElementById('btn-retry').addEventListener('click', () => startGame(game.mode));
+document.getElementById('btn-gameover-menu').addEventListener('click', showMenu);
+document.getElementById('mute-btn').addEventListener('click', () => {
+  game.muted = !game.muted;
+  applyMute();
+});
+
+document.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+
+// ============================================================
+// RESIZE
+// ============================================================
+
+function resize() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let cw, ch;
+  const aspect = W / H;
+  if (vw / vh > aspect) {
+    ch = vh; cw = vh * aspect;
+  } else {
+    cw = vw; ch = vw / aspect;
+  }
+  const scale = Math.max(1, Math.floor(Math.min(vw / W, vh / H)));
+  if (scale * W <= vw && scale * H <= vh) {
+    cw = scale * W;
+    ch = scale * H;
+  }
+  canvas.style.width = cw + 'px';
+  canvas.style.height = ch + 'px';
+}
+window.addEventListener('resize', resize);
+resize();
+updateInstallCta();
+window.addEventListener('orientationchange', updateInstallCta);
+
+// ============================================================
+// BOOT
+// ============================================================
+
+applyMute(); // sync UI with stored mute pref
+loadOptionalImage('fairyFly', OPTIONAL_ASSETS.fairyFly); // optional; game still works if missing
+
+loadAllImages().then(() => {
+  game.assetsReady = true;
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('btn-autorun').disabled = false;
+  document.getElementById('btn-control').disabled = false;
+  // v0.4: hook up legend sprites
+  document.getElementById('legend-rainbow').src = ASSETS.rainbow;
+  document.getElementById('legend-icecream').src = ASSETS.icecream;
+  document.getElementById('legend-mud').src = ASSETS.mud;
+  document.getElementById('legend-rock').src = ASSETS.rock;
+}).catch(err => {
+  document.getElementById('loading').textContent = 'Fout bij laden sprites: ' + err.message;
+});
+
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>
