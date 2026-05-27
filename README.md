@@ -2,7 +2,7 @@
 
 **Unicorn Run** is een kleine arcade-style browsergame rond een vliegende/rennende unicorn, gebouwd als één losse HTML-game met lokale assets. De game kan direct in een browser worden geopend en is geschikt om op iPhone/iPad via Safari op het beginscherm te zetten.
 
-Current package version: **v0.5.5**
+Current package version: **v0.5.6**
 
 ## Starten
 
@@ -28,7 +28,7 @@ De package bevat iOS/iPadOS homescreen icons en een web-app manifest. Op iOS bli
 ### Auto-Run
 
 - De unicorn loopt automatisch.
-- Op touch devices gebruik je de roze **JUMP**-knop rechtsonder.
+- Op touch devices gebruik je de roze **SPRING**-knop rechtsonder.
 - Op desktop werkt springen ook via muis/klik of toetsenbord, afhankelijk van de bestaande controls in de game.
 
 ### Gecontroleerd / Manual
@@ -36,13 +36,15 @@ De package bevat iOS/iPadOS homescreen icons en een web-app manifest. Op iOS bli
 - Links op het scherm zit een floating touch-controller.
 - De joystick verschijnt waar je aanraakt aan de linkerzijde.
 - Sleep links/rechts om te sturen.
-- Gebruik de roze **JUMP**-knop rechtsonder om te springen.
+- Gebruik de roze **SPRING**-knop rechtsonder om te springen.
 
 ## Features in deze bekende buildlijn
 
 - Arcade runner gameplay met unicorn/rainbow-sfeer.
 - Auto-Run en gecontroleerde/manual speelmodus.
 - Lokale Top 5 highscore board per modus met initialen en datum.
+- In-game pauzeknop rechtsboven, met pauzemenu.
+- Zichtbare game-tekst en uitleg in het Nederlands.
 - Game-over sfeer met fairy/melancholische animatie en muziek.
 - iPhone/iPad homescreen ondersteuning met app-icon.
 - Install-CTA op het startscherm.
@@ -73,7 +75,7 @@ Deze README legt alleen vast wat bekend is uit de projectcontext en de door Niel
 - **Prompts voor unicorn, regenboog, ijsjes, steen en modder:** afkomstig uit Claude, volgens projectnotities van Niels.
 - **Fairy prompt:** gestart door Niels op basis van de unicorn prompt en verder afgerond met hulp van ChatGPT.
 - **Animatie-inzichten:** gebaseerd op Claude's inzichten, volgens projectnotities van Niels.
-- **v0.5.1 t/m v0.5.5 patches:** door ChatGPT verwerkt op basis van Niels' verzoeken en aangeleverde bestanden/assets.
+- **v0.5.1 t/m v0.5.6 patches:** door ChatGPT verwerkt op basis van Niels' verzoeken en aangeleverde bestanden/assets.
 
 ## Privacy / opslag
 

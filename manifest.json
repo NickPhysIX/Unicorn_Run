@@ -1,7 +1,7 @@
 {
   "name": "Unicorn Run",
   "short_name": "Unicorn Run",
-  "description": "A tiny rainbow unicorn arcade runner.",
+  "description": "Een kleine regenboog-unicorn arcadegame.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

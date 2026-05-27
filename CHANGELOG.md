@@ -2,6 +2,28 @@
 
 Alle noemenswaardige wijzigingen in deze bekende buildlijn worden hier bijgehouden. Sommige oudere onderdelen zijn gebaseerd op projectcontext/notities en niet op een volledig beschikbaar Git-achtig historisch archief.
 
+
+## v0.5.6 — Nederlandse UI + pauzeknop in-game
+
+### Added
+
+- Added a visible in-game **Pauze** button in the top-right corner.
+- The pause button opens the existing pause menu with **Doorspelen** and **Menu**.
+- The pause button is hidden on the start screen, pause screen and game-over screen.
+
+### Changed
+
+- Updated visible in-game text and short explanations to Dutch.
+- Changed the pink touch button label from **JUMP** to **SPRING**.
+- Changed the score label from **Best** to **Beste**.
+- Changed **Game Over** to **Spel voorbij**.
+- Changed the visible Auto-Run mode label to **Automatisch**.
+- Updated visible version text and HTML title to v0.5.6.
+
+### Notes
+
+- No gameplay, sprite, icon, music or leaderboard storage behavior was intentionally changed in this version.
+
 ## v0.5.5 — Documentation + `index.html` package
 
 ### Added
