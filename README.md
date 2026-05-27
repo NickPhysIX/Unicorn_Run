@@ -2,7 +2,7 @@
 
 **Unicorn Run** is een kleine arcade-style browsergame rond een vliegende/rennende unicorn, gebouwd als één losse HTML-game met lokale assets. De game kan direct in een browser worden geopend en is geschikt om op iPhone/iPad via Safari op het beginscherm te zetten.
 
-Current package version: **v0.5.8**
+Current package version: **v0.5.10**
 
 ## Starten
 
@@ -47,7 +47,8 @@ De package bevat iOS/iPadOS homescreen icons en een web-app manifest. Op iOS bli
 - Automatische pauze/audio-stop wanneer de app/browser naar de achtergrond gaat of sluit.
 - Passieve update-check bij openen/terugkeren, met offline fallback via service worker.
 - Zichtbare game-tekst en uitleg in het Nederlands.
-- Game-over sfeer met fairy/melancholische animatie en muziek.
+- Game-over sfeer met fairy/melancholische animatie en muziek; de fairy gebruikt nu de volledige beschikbare schermhoogte achter de score/tekstelementen.
+- Tijdens een run vliegt de fairy af en toe door het speelscherm en laat ze fairy dust vallen; aanraken herstelt maximaal 2 hartjes.
 - iPhone/iPad homescreen ondersteuning met app-icon.
 - Install-CTA op het startscherm.
 - Startscreen-credit: **Niels Braakman**.
@@ -79,7 +80,7 @@ Deze README legt alleen vast wat bekend is uit de projectcontext en de door Niel
 - **Prompts voor unicorn, regenboog, ijsjes, steen en modder:** afkomstig uit Claude, volgens projectnotities van Niels.
 - **Fairy prompt:** gestart door Niels op basis van de unicorn prompt en verder afgerond met hulp van ChatGPT.
 - **Animatie-inzichten:** gebaseerd op Claude's inzichten, volgens projectnotities van Niels.
-- **v0.5.1 t/m v0.5.8 patches:** door ChatGPT verwerkt op basis van Niels' verzoeken en aangeleverde bestanden/assets.
+- **v0.5.1 t/m v0.5.10 patches:** door ChatGPT verwerkt op basis van Niels' verzoeken en aangeleverde bestanden/assets.
 
 ## Privacy / opslag
 

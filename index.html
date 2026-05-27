@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Unicorn Run v0.5.8</title>
+<title>Unicorn Run v0.5.10</title>
 <meta name="theme-color" content="#c66dff">
 <meta name="application-name" content="Unicorn Run">
 <meta name="mobile-web-app-capable" content="yes">
@@ -378,11 +378,10 @@
   }
   #gameover-fairy-canvas {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    width: min(100vw, calc(100vh * 16 / 9));
-    height: min(100vh, calc(100vw * 9 / 16));
-    transform: translate(-50%, -50%);
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
@@ -597,7 +596,7 @@
         <span class="legend-label legend-points-minus">-1 ❤</span>
       </div>
     </div>
-    <div class="small">v0.5.8 — voor Emily</div>
+    <div class="small">v0.5.10 — voor Emily</div>
     <div class="start-credit">Niels Braakman</div>
   </div>
 
@@ -634,10 +633,10 @@
 'use strict';
 
 // ============================================================
-// UNICORN RUN v0.5.8 — lifecycle audio stop + passive app update check
+// UNICORN RUN v0.5.10 — in-run fairy dust healing event
 // ============================================================
 
-const APP_VERSION = '0.5.8';
+const APP_VERSION = '0.5.10';
 
 const ASSETS = {
   unicornRun: "data:image/png;base64,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",
@@ -664,7 +663,14 @@ gameoverFairyCtx.imageSmoothingEnabled = false;
 
 const W = 480, H = 270;
 const GROUND_Y = 220;
+const MAX_HEARTS = 6;
 const DAMAGE_INVINCIBILITY_MS = 1000; // v0.5.7: short grace period after mud/rock damage
+const FAIRY_EVENT_MIN_DELAY_MS = 60000;   // v0.5.10: rare in-run fairy event, minimum 1 minute apart
+const FAIRY_EVENT_MAX_DELAY_MS = 120000;  // first/normal event target: roughly 1–2 minutes
+const FAIRY_EVENT_SPEED = 0.065;          // pixels per millisecond, right-to-left
+const FAIRY_EVENT_SIZE = 34;
+const FAIRY_DUST_HEAL = 2;
+const FAIRY_DUST_LIFETIME_MS = 6500;
 
 // Sprite frame dimensions (must match the actual PNG files)
 const UNICORN_FRAME_W = 48;
@@ -699,6 +705,18 @@ const game = {
     time: 0,
     sparkles: [],
     lastSparkle: 0,
+    yPhase: 0,                       // v0.5.9: randomized vertical start for the full-height fairy path
+  },
+  runFairy: {                        // v0.5.10: occasional fairy fly-by during play
+    active: false,
+    time: 0,
+    nextAt: 0,
+    x: W + 60,
+    y: 80,
+    yBase: 80,
+    yPhase: 0,
+    lastDust: 0,
+    drops: [],
   },
 };
 
@@ -1460,19 +1478,125 @@ function updateParticles(dt) {
   game.particles = game.particles.filter(p => p.life > 0);
 }
 
+function scheduleNextRunFairyEvent(minDelay = FAIRY_EVENT_MIN_DELAY_MS, maxDelay = FAIRY_EVENT_MAX_DELAY_MS) {
+  const spread = Math.max(0, maxDelay - minDelay);
+  game.runFairy.nextAt = game.time + minDelay + Math.random() * spread;
+}
+
+function resetRunFairyEvent() {
+  game.runFairy.active = false;
+  game.runFairy.time = 0;
+  game.runFairy.x = W + 60;
+  game.runFairy.y = 80;
+  game.runFairy.yBase = 80;
+  game.runFairy.yPhase = Math.random() * Math.PI * 2;
+  game.runFairy.lastDust = 0;
+  game.runFairy.drops = [];
+  scheduleNextRunFairyEvent(FAIRY_EVENT_MIN_DELAY_MS, FAIRY_EVENT_MAX_DELAY_MS);
+}
+
+function startRunFairyEvent() {
+  const f = game.runFairy;
+  f.active = true;
+  f.time = 0;
+  f.x = W + FAIRY_EVENT_SIZE + 12;
+  f.yBase = 44 + Math.random() * 96;
+  f.yPhase = Math.random() * Math.PI * 2;
+  f.lastDust = 0;
+}
+
+function spawnFairyDust() {
+  const f = game.runFairy;
+  f.drops.push({
+    x: f.x + FAIRY_EVENT_SIZE * 0.20,
+    y: f.y + FAIRY_EVENT_SIZE * 0.58,
+    width: 16,
+    height: 16,
+    vx: -0.025 - Math.random() * 0.035,
+    vy: 0.035 + Math.random() * 0.025,
+    age: 0,
+    spin: Math.random() * Math.PI * 2,
+    collected: false,
+  });
+}
+
+function updateRunFairyEvent(dt) {
+  const f = game.runFairy;
+  if (!f) return;
+
+  if (!f.active && game.time >= f.nextAt) {
+    startRunFairyEvent();
+  }
+
+  if (f.active) {
+    f.time += dt;
+    f.x -= FAIRY_EVENT_SPEED * dt;
+    f.y = f.yBase + Math.sin(f.time / 430 + f.yPhase) * 16;
+    f.lastDust += dt;
+
+    // Drop a short trail of collectible fairy dust only while she is on screen.
+    if (f.lastDust >= 420 && f.x < W - 8 && f.x > 38) {
+      f.lastDust = 0;
+      spawnFairyDust();
+    }
+
+    if (f.x < -FAIRY_EVENT_SIZE - 24) {
+      f.active = false;
+      scheduleNextRunFairyEvent(FAIRY_EVENT_MIN_DELAY_MS, FAIRY_EVENT_MAX_DELAY_MS);
+    }
+  }
+
+  for (const d of f.drops) {
+    d.age += dt;
+    d.x += d.vx * dt;
+    d.y += d.vy * dt;
+    d.vy += 0.000055 * dt;
+    d.spin += 0.006 * dt;
+  }
+
+  f.drops = f.drops.filter(d => !d.collected && d.age < FAIRY_DUST_LIFETIME_MS && d.y < GROUND_Y + 18 && d.x > -32);
+}
+
 function resetGameoverFx() {
   game.gameoverFx.time = 0;
   game.gameoverFx.sparkles = [];
   game.gameoverFx.lastSparkle = 0;
+  // v0.5.9: randomize the fairy's vertical sine phase on each game-over reset.
+  // This lets her start high, low or around the middle while still using the full screen height.
+  game.gameoverFx.yPhase = Math.random() * Math.PI * 2;
+  resizeGameoverFairyCanvas();
   clearGameoverFairyOverlay();
+}
+
+function resizeGameoverFairyCanvas() {
+  // v0.5.9: the fairy overlay is menu/viewport sized, not locked to the 16:9 game canvas.
+  const nextW = Math.max(1, Math.round(window.innerWidth || W));
+  const nextH = Math.max(1, Math.round(window.innerHeight || H));
+  if (gameoverFairyCanvas.width !== nextW) gameoverFairyCanvas.width = nextW;
+  if (gameoverFairyCanvas.height !== nextH) gameoverFairyCanvas.height = nextH;
+}
+
+function getGameoverFairySize() {
+  const minSide = Math.min(gameoverFairyCanvas.width || W, gameoverFairyCanvas.height || H);
+  return Math.max(64, Math.min(112, Math.round(minSide * 0.24)));
 }
 
 function getFairyPosition() {
   const t = game.gameoverFx.time / 1000;
-  const travel = W + 140;
-  const x = (t * 34) % travel - 70;
-  const y = 72 + Math.sin(t * 1.25) * 22 + Math.sin(t * 0.43) * 8;
-  return { x, y };
+  const canvasW = gameoverFairyCanvas.width || W;
+  const canvasH = gameoverFairyCanvas.height || H;
+  const size = getGameoverFairySize();
+  const travel = canvasW + size * 2;
+  const speed = 34 * Math.max(1, canvasW / W);
+  const x = (t * speed) % travel - size;
+
+  // Use nearly the full available vertical space. A random phase on reset means
+  // the fairy may begin near the top, near the bottom, or around the middle.
+  const margin = Math.max(6, Math.round(canvasH * 0.03));
+  const usableHeight = Math.max(0, canvasH - size - margin * 2);
+  const wave = (Math.sin(t * 0.85 + game.gameoverFx.yPhase) + 1) / 2;
+  const y = margin + wave * usableHeight;
+  return { x, y, size };
 }
 
 function updateGameoverFx(dt) {
@@ -1484,8 +1608,8 @@ function updateGameoverFx(dt) {
     game.gameoverFx.lastSparkle = 0;
     for (let i = 0; i < 2; i++) {
       game.gameoverFx.sparkles.push({
-        x: pos.x + 8 + Math.random() * 10,
-        y: pos.y + 26 + (Math.random() - 0.5) * 14,
+        x: pos.x + pos.size * 0.12 + Math.random() * pos.size * 0.18,
+        y: pos.y + pos.size * 0.42 + (Math.random() - 0.5) * pos.size * 0.22,
         vx: -0.25 - Math.random() * 0.45,
         vy: -0.10 + Math.random() * 0.25,
         life: 42 + Math.random() * 18,
@@ -1504,10 +1628,11 @@ function updateGameoverFx(dt) {
 }
 
 function clearGameoverFairyOverlay() {
-  gameoverFairyCtx.clearRect(0, 0, W, H);
+  gameoverFairyCtx.clearRect(0, 0, gameoverFairyCanvas.width || W, gameoverFairyCanvas.height || H);
 }
 
 function drawGameoverFairyOverlay() {
+  resizeGameoverFairyCanvas();
   clearGameoverFairyOverlay();
   if (game.scene !== 'gameover') return;
 
@@ -1532,7 +1657,7 @@ function drawGameoverFairyOverlay() {
   gameoverFairyCtx.drawImage(
     img,
     frame * frameW, 0, frameW, frameH,
-    Math.floor(pos.x), Math.floor(pos.y + bob), 64, 64
+    Math.floor(pos.x), Math.floor(pos.y + bob), pos.size, pos.size
   );
 }
 
@@ -1582,6 +1707,27 @@ function checkCollisions() {
             triggerGameOver();
           }
         }
+      }
+    }
+  }
+
+  const fairyDrops = game.runFairy ? game.runFairy.drops : [];
+  for (const d of fairyDrops) {
+    if (d.collected) continue;
+    const db = {
+      x: d.x + 2,
+      y: d.y + 2,
+      w: d.width - 4,
+      h: d.height - 4,
+    };
+    if (ub.x < db.x + db.w && ub.x + ub.w > db.x &&
+        ub.y < db.y + db.h && ub.y + ub.h > db.y) {
+      d.collected = true;
+      game.hearts = Math.min(MAX_HEARTS, game.hearts + FAIRY_DUST_HEAL);
+      sfx.play('icecream');
+      for (let i = 0; i < 12; i++) {
+        addParticle(d.x + d.width / 2, d.y + d.height / 2,
+          ['#fff7a8', '#ffffff', '#ff8fc7', '#c66dff'][i % 4]);
       }
     }
   }
@@ -1666,6 +1812,57 @@ function drawGround() {
   }
 }
 
+function drawFairyDustDrop(d) {
+  const alpha = Math.max(0, Math.min(1, 1 - d.age / FAIRY_DUST_LIFETIME_MS));
+  const x = Math.floor(d.x);
+  const y = Math.floor(d.y);
+  const pulse = Math.sin(d.spin) * 2;
+  ctx.globalAlpha = alpha * 0.95;
+  ctx.fillStyle = '#fff7a8';
+  ctx.fillRect(x + 7, y + 1 + pulse, 2, 14);
+  ctx.fillRect(x + 1, y + 7 + pulse, 14, 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(x + 5, y + 5 + pulse, 6, 6);
+  ctx.fillStyle = '#ff8fc7';
+  ctx.fillRect(x + 3, y + 3 + pulse, 2, 2);
+  ctx.fillStyle = '#c66dff';
+  ctx.fillRect(x + 11, y + 11 + pulse, 2, 2);
+  ctx.globalAlpha = 1;
+}
+
+function drawRunFairyEvent() {
+  const f = game.runFairy;
+  if (!f || (game.scene !== 'play' && game.scene !== 'pause')) return;
+
+  for (const d of f.drops) {
+    if (!d.collected) drawFairyDustDrop(d);
+  }
+
+  if (!f.active) return;
+
+  const img = optionalImages.fairyFly;
+  const frameCount = 4;
+  const frame = Math.floor(f.time / 130) % frameCount;
+  const x = Math.floor(f.x);
+  const y = Math.floor(f.y);
+
+  if (img) {
+    const frameW = img.width / frameCount;
+    const frameH = img.height;
+    ctx.save();
+    ctx.translate(x + FAIRY_EVENT_SIZE, y);
+    ctx.scale(-1, 1); // sprite sheet faces right; fly-by travels right-to-left
+    ctx.drawImage(img, frame * frameW, 0, frameW, frameH, 0, 0, FAIRY_EVENT_SIZE, FAIRY_EVENT_SIZE);
+    ctx.restore();
+  } else {
+    // Tiny fallback sparkle if the optional fairy sprite is missing.
+    ctx.fillStyle = '#c66dff';
+    ctx.fillRect(x + 8, y + 10, 12, 12);
+    ctx.fillStyle = '#fff7a8';
+    ctx.fillRect(x + 4, y + 14, 22, 4);
+  }
+}
+
 function drawEntities() {
   for (const e of game.entities) {
     if (e.collected) continue;
@@ -1718,6 +1915,7 @@ function render() {
   drawHills();
   drawGround();
   drawEntities();
+  drawRunFairyEvent();
   drawUnicorn();
   drawParticles();
   // v0.4: hearts on top, but only during play or pause
@@ -1741,6 +1939,7 @@ function loop(timestamp) {
       game.time += dt;
       updateUnicorn(dt);
       updateEntities(dt);
+      updateRunFairyEvent(dt);
       updateParticles(dt);
       checkCollisions();
     } else if (game.scene === 'gameover') {
@@ -1780,11 +1979,12 @@ function startGame(mode) {
   game.entities = [];
   game.particles = [];
   game.passedHighscore = false;
-  game.hearts = 6;                       // v0.4: reset hearts
+  game.hearts = MAX_HEARTS;              // v0.4: reset hearts
   game.lastHitWasNewHighscore = false;   // v0.4
   game.runStartHighscore = game.highScores[mode] || 0; // v0.5
   game.pendingLeaderboardScore = null;   // v0.5.1
   game.lastSavedLeaderboardId = null;    // v0.5.1
+  resetRunFairyEvent();                  // v0.5.10: schedule first rare fairy fly-by
   resetGameoverFx();
   stopGameoverMusic(true);
 
@@ -1806,6 +2006,7 @@ function showMenu() {
   stopGameoverMusic(true);
   if (!music.paused) music.pause();
   resetGameoverFx();
+  resetRunFairyEvent();
   document.getElementById('start-menu').classList.remove('hidden');
   document.getElementById('pause-menu').classList.add('hidden');
   document.getElementById('gameover-menu').classList.add('hidden');
@@ -1837,6 +2038,10 @@ function triggerGameOver() {
   // This avoids the live-updated highscore masking a true new record.
   game.lastHitWasNewHighscore = game.score > game.runStartHighscore;
   game.lastSavedLeaderboardId = null;
+  if (game.runFairy) {
+    game.runFairy.active = false;
+    game.runFairy.drops = [];
+  }
   resetGameoverFx();
   // Fade from running music into the melancholic game-over lullaby.
   if (!music.paused) fadeAudio(music, 0, 700, true, false);
@@ -2173,11 +2378,12 @@ function resize() {
   }
   canvas.style.width = cw + 'px';
   canvas.style.height = ch + 'px';
+  resizeGameoverFairyCanvas();
 }
 window.addEventListener('resize', resize);
 resize();
 updateInstallCta();
-window.addEventListener('orientationchange', updateInstallCta);
+window.addEventListener('orientationchange', () => { resize(); updateInstallCta(); });
 checkForAppUpdate('boot');
 
 // ============================================================

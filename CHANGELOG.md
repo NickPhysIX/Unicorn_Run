@@ -2,8 +2,37 @@
 
 Alle noemenswaardige wijzigingen in deze bekende buildlijn worden hier bijgehouden. Sommige oudere onderdelen zijn gebaseerd op projectcontext/notities en niet op een volledig beschikbaar Git-achtig historisch archief.
 
+## v0.5.10 — In-run fairy dust healing event
 
+### Added
 
+- Added an occasional in-run fairy fly-by during active play.
+- The fairy flies from right to left across the play screen and drops collectible fairy dust.
+- Touching fairy dust restores up to 2 hearts, capped at the normal maximum heart count.
+- The first fairy event is scheduled after roughly 1–2 minutes of play.
+- Later fairy events are also randomized, with a minimum interval of 1 minute before the next event can start.
+
+### Changed
+
+- Updated visible version text, HTML title, manifest, service worker cache name and version metadata to v0.5.10.
+
+### Notes
+
+- No touch-control, PWA update, audio lifecycle, leaderboard or game-over fairy behavior was intentionally changed in this version.
+
+## v0.5.9 — Full-height game-over fairy path
+
+### Changed
+
+- The game-over fairy overlay now covers the full available menu/viewport area instead of only the 16:9 game-canvas band.
+- The fairy's vertical movement now uses nearly the full available screen height.
+- Each game-over reset randomizes the fairy's vertical sine phase, so she can start high, low or around the middle.
+- The fairy remains behind the score board, score text, buttons and other game-over UI elements while flying.
+- Updated visible version text and HTML title to v0.5.9.
+
+### Notes
+
+- No gameplay, damage, score, audio, PWA update or control behavior was intentionally changed in this version.
 
 ## v0.5.8 — Audio lifecycle stop + passive PWA update check
 

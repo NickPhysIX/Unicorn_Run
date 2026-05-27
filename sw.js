@@ -1,7 +1,7 @@
-// Unicorn Run service worker — v0.5.8
+// Unicorn Run service worker — v0.5.10
 // Network-first for app shell/version files, cached fallback when offline.
 
-const CACHE_NAME = 'unicorn-run-v0.5.8';
+const CACHE_NAME = 'unicorn-run-v0.5.10';
 const CORE_ASSETS = [
   './',
   './index.html',

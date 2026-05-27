@@ -1,6 +1,6 @@
 {
-  "version": "0.5.8",
+  "version": "0.5.10",
   "name": "Unicorn Run",
   "updated": "2026-05-27",
-  "notes": "Lifecycle audio stop and passive PWA update check."
+  "notes": "Occasional in-run fairy fly-by now drops healing fairy dust; touching it restores up to 2 hearts."
 }
